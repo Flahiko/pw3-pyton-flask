@@ -16,11 +16,28 @@ def home():
 
 @app.route('/games')
 def games():
-    return render_template('games.html')
+    #Criando variaveis para passar as informaões de um jogo
+    titulo = "SilkSong"
+    ano= 2025
+    categoria = "Metroid Van"
+    
+    #criando vetor(lista)
+    jogadores= ['Eduardo', 'Ana', 'Guilherme', 'Vitor',' Antônio']
+    
+    return render_template('games.html',
+                           #enviando as variaveis para a página HTML
+                           titulo=titulo,
+                           ano=ano,
+                           categoria=categoria,
+                           jogadores=jogadores)
 
 @app.route('/consoles')
 def console():
-    return render_template('consoles.html')
+    console= ['PlayStation1', 'Xbox', 'Nintendo', 'PlayStation2',' Playstation5']
+    return render_template('consoles.html',
+                           console=console)
+
+
 
 # Iniciando o servidor web
 if __name__ == '__main__':

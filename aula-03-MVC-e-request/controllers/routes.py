@@ -1,12 +1,11 @@
 #importando o render_template
 #Motor para renderizar as páginas 
-from flask import render_template
+from flask import render_template, request, redirect, url_for
 
 #criando a função para receber o flask
 def init_app(app):
     #a partir daqui virão as rotas
-   
-   
+    listaGames =  [{"titulo": "CS-GO", "ano": 2012, "categoria": "fps onlline"}]
    
         # Criando a rota principal do site
     @app.route('/')
@@ -44,3 +43,15 @@ def init_app(app):
         consoles= ['PlayStation1', 'Xbox', 'Nintendo', 'PlayStation2',' Playstation5']
         return render_template('consoles.html',
                             consoles=consoles)
+        
+        #Rota de cadastro de jogos
+    @app.route('/cadgames', methods=['GET', 'POST'])
+    def cadgames():
+        # verificando se o método da requisição é post
+        if request.method =='POST':
+         # recebendo os dados do formulario e gravando na lista
+         listaGames.append({'titulo' : request.form.get ('titulo'), 'categoria' : request.form.get ('categoria'), 'ano' : request.form.get ('ano')})
+         # o metodo append() adicion os valores da lista 
+         return redirect(url_for('cadgames'))
+        return render_template('cadgames.html',
+                               listaGames = listaGames)

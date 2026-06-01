@@ -1,6 +1,7 @@
 # Importando o render_template
 # Motor para renderizar as páginas
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, flash
+from markupsafe import Markup
 # importandoo o model game e o sqlalchemy
 from models.database import Game, db, Usuario
 # importando WERKZEUG
@@ -158,6 +159,7 @@ def init_app(app):
             return redirect(url_for('estoque_jogos'))
         return render_template('editar-jogos.html', game=game)
     
+    # ROTA DE CADASTRO DE USUARIO
     @app.route('/cadastro', methods=['GET', 'POST'])
     def cadastro():
         # Verificando se o metodo é post
@@ -165,17 +167,29 @@ def init_app(app):
             # coletando os dados do formulario
             email = request.form['email']
             senha = request.form['senha']
+            # VERIFICANDO SE USUARIO JÁ EXISTE
+            # BUSCANDO USUSARIO PELO EMAIL
+            usuario = Usuario.query.filter_by(email=email).first()
+            # VERIFICANDO SE USUARIO POSSUI VALOR
+            if usuario:
+                msg = Markup("Usuario já cadastrado. Faça o <a href='/login'>Login</a>")
+                flash(msg, 'danger')
+                return redirect(url_for('cadastro'))
+            
             # GERANDO O HASH DA SENHA (CRIPTOGRAFIA)
-            senha_criptografada = generate_password_hash(senha, method='scrypy')
+            senha_criptografada = generate_password_hash(senha, method='scrypt')
             #  enviando dados para o model
             novo_usuario = Usuario(email=email, senha=senha_criptografada)
             novo_usuario = Usuario(email=email, senha=senha)
             # cadastrando no banco
             db.session.add(novo_usuario)
             db.session.commit()
-            return redirect(url_for('login'))
+            # GERANDO A MENSAGEM DE SUCESSO
+            msgCad = Markup("Cadastro realizado com sucesso! Faça o <a href='/login'>Login</a>")
+            flash(msgCad, 'success')
+            return redirect(url_for('cadastro'))
         return render_template('cadastro.html')
     
     @app.route('/login', methods=['GET', 'POST'])
     def login():
-        return"Bem-vindo a página de login"
+        return render_template('login.html')
